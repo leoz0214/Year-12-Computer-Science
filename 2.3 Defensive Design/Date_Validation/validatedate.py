@@ -45,30 +45,27 @@ def validate_date(date: str) -> bool:
     Ensures that the date is valid based on a set of given criteria.
     The date must be in the format DD/MM/YYYY.
     """
-    # Length check
-    if not len(date) == 10:
-        return False
-
     # Format check
     try:
         day, month, year = date.split("/")
+        # Length check: 2 + 2 + 4 = 10
+        if len(day) != 2 or len(month) != 2 or len(year) != 4:
+            return False
     except ValueError:
+        # More or less than 2 forward slashes.
         return False
 
     # Numeric check
-    for part in (day, month, year):
-        if not part.isdigit():
-            return False
-
-    # To integers
-    day, month, year = map(int, (day, month, year))
-
-    # Range check
-    if year < 1900:
+    if any(not part.isdigit() for part in (day, month, year)):
         return False
 
+    # Cast to integers
+    day, month, year = map(int, (day, month, year))
+
     # Range checks
-    if month == 2:
+    if year < 1900:
+        return False
+    elif month == 2:
         return 1 <= day <= DAYS_IN_EACH_MONTH[2](year)
     return 1 <= day <= DAYS_IN_EACH_MONTH.get(month, -1)
 
